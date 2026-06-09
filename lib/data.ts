@@ -18,6 +18,7 @@ export type Business = {
   description: string;
   tags: string[]; // palabras clave para buscar: "hielo", "garrafas", "delivery"
   featured: boolean;
+  esNuevo?: boolean;
   schedule: {
     lunes: DaySchedule;
     martes: DaySchedule;
@@ -74,7 +75,8 @@ export const CATEGORIES = [
 ];
 
 // ============================================================
-// NEGOCIOS — Agregá o editá negocios acá
+// NEGOCIOS — Estos datos ya no se usan directamente,
+// ahora se leen desde Firebase. Se mantienen como referencia.
 // ============================================================
 export const BUSINESSES: Business[] = [
   {
@@ -88,6 +90,7 @@ export const BUSINESSES: Business[] = [
       "Farmacia con amplio stock de medicamentos, perfumería y artículos de salud. Atención personalizada.",
     tags: ["medicamentos", "remedios", "perfumeria", "pañales", "vitaminas"],
     featured: true,
+    esNuevo: false,
     mapUrl: "https://maps.google.com/?q=Farmacia+Central+San+Miguel+del+Monte",
     schedule: {
       lunes:     { open: "08:00", close: "21:00", closed: false },
@@ -110,6 +113,7 @@ export const BUSINESSES: Business[] = [
       "Almacén de barrio con todo lo necesario. Fiambrería, verdulería y productos de limpieza.",
     tags: ["hielo", "carbon", "garrafas", "pan", "fiambreria", "verduleria", "limpieza", "cigarrillos"],
     featured: true,
+    esNuevo: false,
     mapUrl: "https://maps.google.com/?q=Almacen+El+Cruce+San+Miguel+del+Monte",
     schedule: {
       lunes:     { open: "07:00", close: "22:00", closed: false },
@@ -132,6 +136,7 @@ export const BUSINESSES: Business[] = [
       "Clínica veterinaria con guardia. Atención de urgencias las 24hs. Vacunación, cirugías y peluquería canina.",
     tags: ["guardia", "urgencias", "vacunas", "peluqueria canina", "cirugia", "perros", "gatos"],
     featured: true,
+    esNuevo: false,
     mapUrl: "https://maps.google.com/?q=Veterinaria+SOS+San+Miguel+del+Monte",
     schedule: {
       lunes:     { open: "09:00", close: "20:00", closed: false },
@@ -153,6 +158,7 @@ export const BUSINESSES: Business[] = [
       "Estación de servicio YPF. Nafta, gasoil, GNC. Tienda de conveniencia. Aire y agua gratis.",
     tags: ["nafta", "gasoil", "gnc", "combustible", "aire", "agua"],
     featured: false,
+    esNuevo: false,
     mapUrl: "https://maps.google.com/?q=YPF+San+Miguel+del+Monte",
     schedule: {
       lunes:     { open: "00:00", close: "23:59", closed: false },
@@ -175,6 +181,7 @@ export const BUSINESSES: Business[] = [
       "Pizzería artesanal con delivery. Empanadas, facturas y tartas caseras. La mejor pizza del Monte.",
     tags: ["pizza", "empanadas", "delivery", "facturas", "tartas", "comida"],
     featured: true,
+    esNuevo: false,
     schedule: {
       lunes:     { open: "19:00", close: "23:30", closed: false },
       martes:    { open: "19:00", close: "23:30", closed: false },
