@@ -25,6 +25,7 @@ const emptyBusiness = (): Business => ({
   description: "",
   tags: [],
   featured: false,
+  esNuevo: false,
   schedule: emptySchedule(),
   instagram: "",
   facebook: "",
@@ -165,7 +166,11 @@ function NegocioForm({
           </div>
           <div className="col-span-2 flex items-center gap-2">
             <input type="checkbox" id="featured" checked={b.featured} onChange={(e) => set("featured", e.target.checked)} />
-            <label htmlFor="featured" className="text-sm font-medium text-gray-900">Destacado en la página principal</label>
+            <label htmlFor="featured" className="text-sm font-medium text-gray-900">⭐ Destacado premium (carrusel principal)</label>
+          </div>
+          <div className="col-span-2 flex items-center gap-2">
+            <input type="checkbox" id="esNuevo" checked={(b as any).esNuevo ?? false} onChange={(e) => set("esNuevo" as any, e.target.checked)} />
+            <label htmlFor="esNuevo" className="text-sm font-medium text-gray-900">🌱 Nuevo emprendimiento</label>
           </div>
         </div>
 
@@ -395,7 +400,7 @@ export default function AdminPage() {
                 return (
                   <div key={n.id} className="bg-white rounded-xl border p-4 flex items-center justify-between gap-4">
                     <div>
-                      <p className="font-semibold text-gray-900">{n.name} {n.featured && <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full ml-1">Destacado</span>}</p>
+                      <p className="font-semibold text-gray-900">{n.name} {n.featured && <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full ml-1">⭐ Destacado</span>} {(n as any).esNuevo && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full ml-1">🌱 Nuevo</span>}</p>
                       <p className="text-sm text-gray-600">{cat?.icon} {cat?.label} · {n.address}</p>
                       <p className="text-xs text-gray-500 mt-1">{n.tags.join(", ")}</p>
                     </div>
