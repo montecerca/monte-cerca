@@ -5,6 +5,7 @@ import {
   getNegocios, saveNegocio, deleteNegocio,
   getPromociones, savePromocion, deletePromocion,
   getUrgencias, updateUrgencia,
+  getCategoriasActivas, saveCategoriasDesactivadas,
 } from "@/lib/firestore";
 import { seedFirestore } from "@/lib/seed";
 import { CATEGORIES } from "@/lib/data";
@@ -285,12 +286,14 @@ function PromoForm({
 // ─── PANEL PRINCIPAL ──────────────────────────────────────────────────────────
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
-  const [tab, setTab] = useState<"negocios" | "promociones" | "urgencias" | "setup">("negocios");
+  const [tab, setTab] = useState<"negocios" | "promociones" | "urgencias" | "categorias" | "setup">("negocios");
 
   const [negocios, setNegocios] = useState<Business[]>([]);
   const [promociones, setPromociones] = useState<Promotion[]>([]);
   const [urgencias, setUrgencias] = useState<UsefulInfo[]>([]);
   const [loading, setLoading] = useState(false);
+  const [desactivadas, setDesactivadas] = useState<string[]>([]);
+  const [savingCats, setSavingCats] = useState(false);
 
   const [editNegocio, setEditNegocio] = useState<Business | null>(null);
   const [editPromo, setEditPromo] = useState<Promotion | null>(null);
@@ -344,6 +347,7 @@ export default function AdminPage() {
     { id: "negocios", label: "🏪 Negocios" },
     { id: "promociones", label: "🎯 Promociones" },
     { id: "urgencias", label: "🚨 Urgencias" },
+    { id: "categorias", label: "🏷️ Categorías" },
     { id: "setup", label: "⚙️ Setup" },
   ] as const;
 
@@ -486,6 +490,56 @@ export default function AdminPage() {
               {urgencias.length === 0 && <p className="text-center py-12 text-gray-400">Cargá los datos de ejemplo desde ⚙️ Setup.</p>}
             </div>
             <p className="text-xs text-gray-400 mt-4">Los cambios se guardan automáticamente al salir del campo.</p>
+          </div>
+        )}
+
+
+        {/* TAB CATEGORÍAS */}
+        {tab === "categorias" && (
+          <div className="max-w-lg">
+            <h2 className="text-lg font-semibold mb-1 text-gray-900">Categorías visibles</h2>
+            <p className="text-sm text-gray-600 mb-5">
+              Desactivá las categorías que no quieras mostrar en la página principal. Los cambios se guardan con el botón de abajo.
+            </p>
+            <div className="space-y-2 mb-6">
+              {CATEGORIES.map((cat) => {
+                const activa = !desactivadas.includes(cat.id);
+                return (
+                  <div
+                    key={cat.id}
+                    className={`flex items-center justify-between p-3 rounded-xl border transition-all ${activa ? "bg-white border-gray-200" : "bg-gray-50 border-gray-200 opacity-60"}`}
+                  >
+                    <span className="text-sm font-medium text-gray-900">{cat.icon} {cat.label}</span>
+                    <button
+                      onClick={() => {
+                        setDesactivadas((prev) =>
+                          prev.includes(cat.id)
+                            ? prev.filter((id) => id !== cat.id)
+                            : [...prev, cat.id]
+                        );
+                      }}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${activa ? "bg-blue-600" : "bg-gray-300"}`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${activa ? "translate-x-6" : "translate-x-1"}`}
+                      />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+            <button
+              onClick={async () => {
+                setSavingCats(true);
+                await saveCategoriasDesactivadas(desactivadas);
+                setSavingCats(false);
+                alert("¡Categorías guardadas!");
+              }}
+              disabled={savingCats}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium text-sm disabled:opacity-50"
+            >
+              {savingCats ? "Guardando..." : "Guardar cambios"}
+            </button>
           </div>
         )}
 

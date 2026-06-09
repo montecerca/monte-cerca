@@ -72,3 +72,18 @@ export async function saveUrgencia(info: UsefulInfo): Promise<void> {
 export async function updateUrgencia(id: string, data: Partial<UsefulInfo>): Promise<void> {
   await updateDoc(doc(db, "urgencias", id), data);
 }
+
+// ── CATEGORÍAS ACTIVAS ────────────────────────────────────
+export async function getCategoriasActivas(): Promise<string[]> {
+  try {
+    const snap = await getDoc(doc(db, "config", "categorias"));
+    if (!snap.exists()) return []; // si no existe, todas activas
+    return snap.data().desactivadas ?? [];
+  } catch {
+    return [];
+  }
+}
+
+export async function saveCategoriasDesactivadas(desactivadas: string[]): Promise<void> {
+  await setDoc(doc(db, "config", "categorias"), { desactivadas });
+}

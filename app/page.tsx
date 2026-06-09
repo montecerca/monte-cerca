@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getNegocios, getPromociones, getUrgencias } from "@/lib/firestore";
+import { getNegocios, getPromociones, getUrgencias, getCategoriasActivas } from "@/lib/firestore";
 import { CATEGORIES } from "@/lib/data";
 import { isOpenNow, getScheduleToday } from "@/lib/utils";
 import SearchBar from "@/components/SearchBar";
@@ -12,12 +12,14 @@ export default function HomePage() {
   const [promos, setPromos] = useState<Promotion[]>([]);
   const [urgencias, setUrgencias] = useState<UsefulInfo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [desactivadas, setDesactivadas] = useState<string[]>([]);
 
   useEffect(() => {
-    Promise.all([getNegocios(), getPromociones(), getUrgencias()]).then(([n, p, u]) => {
+    Promise.all([getNegocios(), getPromociones(), getUrgencias(), getCategoriasActivas()]).then(([n, p, u, cats]) => {
       setNegocios(n);
       setPromos(p);
       setUrgencias(u);
+      setDesactivadas(cats);
       setLoading(false);
     });
   }, []);
@@ -42,7 +44,7 @@ export default function HomePage() {
       <section>
         <h2 className="text-lg font-semibold mb-4">Categorías</h2>
         <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
-          {CATEGORIES.map((cat) => (
+          {CATEGORIES.filter((cat) => !desactivadas.includes(cat.id)).map((cat) => (
             <a
               key={cat.id}
               href={`/negocios?categoria=${cat.id}`}
