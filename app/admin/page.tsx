@@ -203,10 +203,10 @@ function NegocioForm({
         </div>
 
         <div className="flex gap-3 mt-6">
-          <button onClick={handleSave} disabled={saving} className="btn-primary">
+          <button onClick={handleSave} disabled={saving} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium text-sm transition-colors disabled:opacity-50">
             {saving ? "Guardando..." : "Guardar"}
           </button>
-          <button onClick={onCancel} className="btn-secondary">Cancelar</button>
+          <button onClick={onCancel} className="bg-gray-100 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-200 font-medium text-sm transition-colors">Cancelar</button>
         </div>
       </div>
     </div>
@@ -269,8 +269,8 @@ function PromoForm({
           </div>
         </div>
         <div className="flex gap-3 mt-6">
-          <button onClick={handleSave} disabled={saving} className="btn-primary">{saving ? "Guardando..." : "Guardar"}</button>
-          <button onClick={onCancel} className="btn-secondary">Cancelar</button>
+          <button onClick={handleSave} disabled={saving} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium text-sm transition-colors disabled:opacity-50">{saving ? "Guardando..." : "Guardar"}</button>
+          <button onClick={onCancel} className="bg-gray-100 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-200 font-medium text-sm transition-colors">Cancelar</button>
         </div>
       </div>
     </div>
@@ -349,7 +349,7 @@ export default function AdminPage() {
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold">Panel Admin — Monte Cerca</h1>
-            <p className="text-sm text-gray-500">San Miguel del Monte</p>
+            <p className="text-sm text-gray-600">San Miguel del Monte</p>
           </div>
           <button
             onClick={() => { sessionStorage.removeItem("mc_admin"); setAuthed(false); }}
@@ -384,8 +384,8 @@ export default function AdminPage() {
         {!loading && tab === "negocios" && (
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">Negocios ({negocios.length})</h2>
-              <button onClick={() => setEditNegocio(emptyBusiness())} className="btn-primary">
+              <h2 className="text-lg font-semibold text-gray-900">Negocios ({negocios.length})</h2>
+              <button onClick={() => setEditNegocio(emptyBusiness())} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium text-sm transition-colors disabled:opacity-50">
                 + Nuevo negocio
               </button>
             </div>
@@ -395,12 +395,12 @@ export default function AdminPage() {
                 return (
                   <div key={n.id} className="bg-white rounded-xl border p-4 flex items-center justify-between gap-4">
                     <div>
-                      <p className="font-semibold">{n.name} {n.featured && <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full ml-1">Destacado</span>}</p>
-                      <p className="text-sm text-gray-500">{cat?.icon} {cat?.label} · {n.address}</p>
-                      <p className="text-xs text-gray-400 mt-1">{n.tags.join(", ")}</p>
+                      <p className="font-semibold text-gray-900">{n.name} {n.featured && <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full ml-1">Destacado</span>}</p>
+                      <p className="text-sm text-gray-600">{cat?.icon} {cat?.label} · {n.address}</p>
+                      <p className="text-xs text-gray-500 mt-1">{n.tags.join(", ")}</p>
                     </div>
                     <div className="flex gap-2 shrink-0">
-                      <button onClick={() => setEditNegocio(n)} className="btn-secondary text-sm">Editar</button>
+                      <button onClick={() => setEditNegocio(n)} className="bg-gray-100 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-200 font-medium text-sm transition-colors">Editar</button>
                       <button onClick={() => handleDeleteNegocio(n.id)} className="text-sm px-3 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50">Eliminar</button>
                     </div>
                   </div>
@@ -420,19 +420,19 @@ export default function AdminPage() {
         {!loading && tab === "promociones" && (
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">Promociones ({promociones.length})</h2>
-              <button onClick={() => setEditPromo(emptyPromo())} className="btn-primary">+ Nueva promo</button>
+              <h2 className="text-lg font-semibold text-gray-900">Promociones ({promociones.length})</h2>
+              <button onClick={() => setEditPromo(emptyPromo())} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium text-sm transition-colors disabled:opacity-50">+ Nueva promo</button>
             </div>
             <div className="space-y-3">
               {promociones.map((p) => (
                 <div key={p.id} className="bg-white rounded-xl border p-4 flex items-center justify-between gap-4">
                   <div>
-                    <p className="font-semibold">{p.title}</p>
-                    <p className="text-sm text-gray-500">{p.businessName} · Hasta {p.endsAt}</p>
-                    <p className="text-sm text-gray-400 mt-1">{p.description}</p>
+                    <p className="font-semibold text-gray-900">{p.title}</p>
+                    <p className="text-sm text-gray-600">{p.businessName} · Hasta {p.endsAt}</p>
+                    <p className="text-sm text-gray-500 mt-1">{p.description}</p>
                   </div>
                   <div className="flex gap-2 shrink-0">
-                    <button onClick={() => setEditPromo(p)} className="btn-secondary text-sm">Editar</button>
+                    <button onClick={() => setEditPromo(p)} className="bg-gray-100 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-200 font-medium text-sm transition-colors">Editar</button>
                     <button onClick={() => handleDeletePromo(p.id)} className="text-sm px-3 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50">Eliminar</button>
                   </div>
                 </div>
@@ -445,11 +445,11 @@ export default function AdminPage() {
         {/* TAB URGENCIAS */}
         {!loading && tab === "urgencias" && (
           <div>
-            <h2 className="text-lg font-semibold mb-4">Urgencias y servicios esenciales</h2>
+            <h2 className="text-lg font-semibold mb-4 text-gray-900">Urgencias y servicios esenciales</h2>
             <div className="space-y-4">
               {urgencias.map((u) => (
                 <div key={u.id} className="bg-white rounded-xl border p-4">
-                  <p className="font-semibold mb-3">{u.title}</p>
+                  <p className="font-semibold mb-3 text-gray-900">{u.title}</p>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs text-gray-500 mb-1">Teléfono</label>
@@ -487,12 +487,12 @@ export default function AdminPage() {
         {/* TAB SETUP */}
         {tab === "setup" && (
           <div className="max-w-lg">
-            <h2 className="text-lg font-semibold mb-2">Carga inicial de datos</h2>
+            <h2 className="text-lg font-semibold mb-2 text-gray-900">Carga inicial de datos</h2>
             <p className="text-sm text-gray-600 mb-4">
               Hacé esto <strong>una sola vez</strong> para cargar los negocios, promociones y urgencias de ejemplo a Firebase.
               Después de esto, todo se edita desde este panel.
             </p>
-            <button onClick={handleSeedData} disabled={seedLoading} className="btn-primary">
+            <button onClick={handleSeedData} disabled={seedLoading} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium text-sm transition-colors disabled:opacity-50">
               {seedLoading ? "Cargando..." : "Cargar datos de ejemplo a Firebase"}
             </button>
             {seedMsg && (
