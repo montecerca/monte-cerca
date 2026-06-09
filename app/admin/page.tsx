@@ -58,7 +58,7 @@ function Login({ onLogin }: { onLogin: () => void }) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-center mb-6">🔐 Panel Admin</h1>
+        <h1 className="text-2xl font-bold text-center mb-6 text-gray-900">🔐 Panel Admin</h1>
         <p className="text-center text-gray-500 mb-6 text-sm">Monte Cerca</p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
@@ -120,15 +120,15 @@ function NegocioForm({
   return (
     <div className="fixed inset-0 bg-black/50 z-50 overflow-y-auto">
       <div className="bg-white max-w-2xl mx-auto my-8 rounded-xl p-6 shadow-xl">
-        <h2 className="text-xl font-bold mb-4">{b.id ? "Editar negocio" : "Nuevo negocio"}</h2>
+        <h2 className="text-xl font-bold mb-4 text-gray-900">{b.id ? "Editar negocio" : "Nuevo negocio"}</h2>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
-            <label className="block text-sm font-medium mb-1">Nombre *</label>
+            <label className="block text-sm font-medium mb-1 text-gray-900">Nombre *</label>
             <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={b.name} onChange={(e) => set("name", e.target.value)} />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Categoría *</label>
+            <label className="block text-sm font-medium mb-1 text-gray-900">Categoría *</label>
             <select className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={b.category} onChange={(e) => set("category", e.target.value)}>
               {CATEGORIES.map((c) => (
                 <option key={c.id} value={c.id}>{c.icon} {c.label}</option>
@@ -136,36 +136,36 @@ function NegocioForm({
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Teléfono *</label>
+            <label className="block text-sm font-medium mb-1 text-gray-900">Teléfono *</label>
             <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={b.phone} onChange={(e) => set("phone", e.target.value)} />
           </div>
           <div className="col-span-2">
-            <label className="block text-sm font-medium mb-1">Dirección *</label>
+            <label className="block text-sm font-medium mb-1 text-gray-900">Dirección *</label>
             <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={b.address} onChange={(e) => set("address", e.target.value)} />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">WhatsApp (solo números)</label>
+            <label className="block text-sm font-medium mb-1 text-gray-900">WhatsApp (solo números)</label>
             <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={b.whatsapp ?? ""} onChange={(e) => set("whatsapp", e.target.value)} placeholder="5492271..." />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Instagram</label>
+            <label className="block text-sm font-medium mb-1 text-gray-900">Instagram</label>
             <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={b.instagram ?? ""} onChange={(e) => set("instagram", e.target.value)} placeholder="@negocio" />
           </div>
           <div className="col-span-2">
-            <label className="block text-sm font-medium mb-1">Descripción</label>
+            <label className="block text-sm font-medium mb-1 text-gray-900">Descripción</label>
             <textarea className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white h-20" value={b.description} onChange={(e) => set("description", e.target.value)} />
           </div>
           <div className="col-span-2">
-            <label className="block text-sm font-medium mb-1">Tags (separados por coma)</label>
+            <label className="block text-sm font-medium mb-1 text-gray-900">Tags (separados por coma)</label>
             <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={tagsStr} onChange={(e) => setTagsStr(e.target.value)} placeholder="delivery, hielo, garrafas" />
           </div>
           <div className="col-span-2">
-            <label className="block text-sm font-medium mb-1">Link Google Maps</label>
+            <label className="block text-sm font-medium mb-1 text-gray-900">Link Google Maps</label>
             <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={b.mapUrl ?? ""} onChange={(e) => set("mapUrl", e.target.value)} />
           </div>
           <div className="col-span-2 flex items-center gap-2">
             <input type="checkbox" id="featured" checked={b.featured} onChange={(e) => set("featured", e.target.checked)} />
-            <label htmlFor="featured" className="text-sm font-medium">Destacado en la página principal</label>
+            <label htmlFor="featured" className="text-sm font-medium text-gray-900">Destacado en la página principal</label>
           </div>
         </div>
 
@@ -174,13 +174,13 @@ function NegocioForm({
         <div className="space-y-2">
           {DIAS.map((dia) => (
             <div key={dia} className="flex items-center gap-3">
-              <span className="w-24 text-sm capitalize">{dia}</span>
+              <span className="w-24 text-sm capitalize text-gray-900">{dia}</span>
               <input
                 type="checkbox"
                 checked={b.schedule[dia].closed}
                 onChange={(e) => setScheduleDay(dia, "closed", e.target.checked)}
               />
-              <span className="text-xs text-gray-500">Cerrado</span>
+              <span className="text-xs font-medium text-gray-800">Cerrado</span>
               {!b.schedule[dia].closed && (
                 <>
                   <input
@@ -246,25 +246,25 @@ function PromoForm({
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
       <div className="bg-white max-w-lg w-full mx-4 rounded-xl p-6 shadow-xl">
-        <h2 className="text-xl font-bold mb-4">{p.id ? "Editar promoción" : "Nueva promoción"}</h2>
+        <h2 className="text-xl font-bold mb-4 text-gray-900">{p.id ? "Editar promoción" : "Nueva promoción"}</h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Negocio *</label>
+            <label className="block text-sm font-medium mb-1 text-gray-900">Negocio *</label>
             <select className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={p.businessId} onChange={(e) => set("businessId", e.target.value)}>
               <option value="">Seleccioná un negocio</option>
               {negocios.map((n) => <option key={n.id} value={n.id}>{n.name}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Título *</label>
+            <label className="block text-sm font-medium mb-1 text-gray-900">Título *</label>
             <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={p.title} onChange={(e) => set("title", e.target.value)} />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Descripción</label>
+            <label className="block text-sm font-medium mb-1 text-gray-900">Descripción</label>
             <textarea className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white h-20" value={p.description} onChange={(e) => set("description", e.target.value)} />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Válida hasta</label>
+            <label className="block text-sm font-medium mb-1 text-gray-900">Válida hasta</label>
             <input type="date" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={p.endsAt} onChange={(e) => set("endsAt", e.target.value)} />
           </div>
         </div>
@@ -452,7 +452,7 @@ export default function AdminPage() {
                   <p className="font-semibold mb-3 text-gray-900">{u.title}</p>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">Teléfono</label>
+                      <label className="block text-xs font-medium mb-1 text-gray-700">Teléfono</label>
                       <input
                         className="input text-sm"
                         defaultValue={u.phone}
@@ -460,7 +460,7 @@ export default function AdminPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">Dirección</label>
+                      <label className="block text-xs font-medium mb-1 text-gray-700">Dirección</label>
                       <input
                         className="input text-sm"
                         defaultValue={u.address ?? ""}
@@ -468,7 +468,7 @@ export default function AdminPage() {
                       />
                     </div>
                     <div className="col-span-2">
-                      <label className="block text-xs text-gray-500 mb-1">Notas / Farmacia de turno</label>
+                      <label className="block text-xs font-medium mb-1 text-gray-700">Notas / Farmacia de turno</label>
                       <input
                         className="input text-sm"
                         defaultValue={u.notes ?? ""}
@@ -488,7 +488,7 @@ export default function AdminPage() {
         {tab === "setup" && (
           <div className="max-w-lg">
             <h2 className="text-lg font-semibold mb-2 text-gray-900">Carga inicial de datos</h2>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-gray-800 mb-4">
               Hacé esto <strong>una sola vez</strong> para cargar los negocios, promociones y urgencias de ejemplo a Firebase.
               Después de esto, todo se edita desde este panel.
             </p>
