@@ -10,6 +10,8 @@ import {
 import { seedFirestore } from "@/lib/seed";
 import { CATEGORIES } from "@/lib/data";
 import type { Business, Promotion, UsefulInfo } from "@/lib/data";
+import { db } from "@/lib/firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 const DIAS = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"] as const;
 
@@ -150,8 +152,16 @@ function NegocioForm({
             <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={b.whatsapp ?? ""} onChange={(e) => set("whatsapp", e.target.value)} placeholder="5492271..." />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-900">Instagram</label>
-            <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={b.instagram ?? ""} onChange={(e) => set("instagram", e.target.value)} placeholder="@negocio" />
+            <label className="block text-sm font-medium mb-1 text-gray-900">Instagram (sin @)</label>
+            <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={b.instagram ?? ""} onChange={(e) => set("instagram", e.target.value)} placeholder="nombrenegocio" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-900">Facebook (usuario o página)</label>
+            <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={b.facebook ?? ""} onChange={(e) => set("facebook", e.target.value)} placeholder="nombrenegocio" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-900">Link Google Maps</label>
+            <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={b.mapUrl ?? ""} onChange={(e) => set("mapUrl", e.target.value)} />
           </div>
           <div className="col-span-2">
             <label className="block text-sm font-medium mb-1 text-gray-900">Descripción</label>
@@ -160,10 +170,6 @@ function NegocioForm({
           <div className="col-span-2">
             <label className="block text-sm font-medium mb-1 text-gray-900">Tags (separados por coma)</label>
             <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={tagsStr} onChange={(e) => setTagsStr(e.target.value)} placeholder="delivery, hielo, garrafas" />
-          </div>
-          <div className="col-span-2">
-            <label className="block text-sm font-medium mb-1 text-gray-900">Link Google Maps</label>
-            <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={b.mapUrl ?? ""} onChange={(e) => set("mapUrl", e.target.value)} />
           </div>
           <div className="col-span-2 flex items-center gap-2">
             <input type="checkbox" id="featured" checked={b.featured} onChange={(e) => set("featured", e.target.checked)} />
@@ -286,7 +292,7 @@ function PromoForm({
 // ─── PANEL PRINCIPAL ──────────────────────────────────────────────────────────
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
-  const [tab, setTab] = useState<"negocios" | "promociones" | "urgencias" | "categorias" | "setup">("negocios");
+  const [tab, setTab] = useState<"negocios" | "promociones" | "urgencias" | "categorias" | "bienvenida" | "setup">("negocios");
 
   const [negocios, setNegocios] = useState<Business[]>([]);
   const [promociones, setPromociones] = useState<Promotion[]>([]);
@@ -294,6 +300,12 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [desactivadas, setDesactivadas] = useState<string[]>([]);
   const [savingCats, setSavingCats] = useState(false);
+
+  // Mensaje de bienvenida
+  const [mensajeBienvenida, setMensajeBienvenida] = useState("");
+  const [mensajeActivo, setMensajeActivo] = useState(false);
+  const [savingMensaje, setSavingMensaje] = useState(false);
+  const [loadingMensaje, setLoadingMensaje] = useState(false);
 
   const [editNegocio, setEditNegocio] = useState<Business | null>(null);
   const [editPromo, setEditPromo] = useState<Promotion | null>(null);
@@ -313,7 +325,28 @@ export default function AdminPage() {
     setLoading(false);
   }, []);
 
-  useEffect(() => { if (authed) loadAll(); }, [authed, loadAll]);
+  // Carga el mensaje de bienvenida desde Firebase
+  const loadMensaje = useCallback(async () => {
+    setLoadingMensaje(true);
+    try {
+      const snap = await getDoc(doc(db, "config", "bienvenida"));
+      if (snap.exists()) {
+        const data = snap.data();
+        setMensajeBienvenida(data.texto ?? "");
+        setMensajeActivo(data.activo ?? false);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setLoadingMensaje(false);
+  }, []);
+
+  useEffect(() => {
+    if (authed) {
+      loadAll();
+      loadMensaje();
+    }
+  }, [authed, loadAll, loadMensaje]);
 
   if (!authed) return <Login onLogin={() => setAuthed(true)} />;
 
@@ -343,11 +376,34 @@ export default function AdminPage() {
     setUrgencias((prev) => prev.map((u) => u.id === id ? { ...u, [field]: value } : u));
   }
 
+  async function handleSaveMensaje() {
+    setSavingMensaje(true);
+    try {
+      await setDoc(doc(db, "config", "bienvenida"), {
+        texto: mensajeBienvenida,
+        activo: mensajeActivo,
+      });
+      alert("¡Mensaje guardado!");
+    } catch (e) {
+      alert("Error al guardar el mensaje");
+    }
+    setSavingMensaje(false);
+  }
+
+  // Toggle activo/inactivo de un negocio
+  async function handleToggleActivo(negocio: Business) {
+    const nuevoEstado = !(negocio as any).activo;
+    const actualizado = { ...negocio, activo: nuevoEstado };
+    await saveNegocio(actualizado);
+    setNegocios((prev) => prev.map((n) => n.id === negocio.id ? actualizado as Business : n));
+  }
+
   const tabs = [
     { id: "negocios", label: "🏪 Negocios" },
     { id: "promociones", label: "🎯 Promociones" },
     { id: "urgencias", label: "🚨 Urgencias" },
     { id: "categorias", label: "🏷️ Categorías" },
+    { id: "bienvenida", label: "💬 Bienvenida" },
     { id: "setup", label: "⚙️ Setup" },
   ] as const;
 
@@ -370,13 +426,13 @@ export default function AdminPage() {
       </header>
 
       {/* Tabs */}
-      <div className="bg-white border-b">
-        <div className="max-w-5xl mx-auto px-4 flex gap-1">
+      <div className="bg-white border-b overflow-x-auto">
+        <div className="max-w-5xl mx-auto px-4 flex gap-1 min-w-max">
           {tabs.map((t) => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 tab === t.id ? "border-blue-600 text-blue-600" : "border-transparent text-gray-600 hover:text-gray-900"
               }`}
             >
@@ -394,22 +450,36 @@ export default function AdminPage() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">Negocios ({negocios.length})</h2>
-              <button onClick={() => setEditNegocio(emptyBusiness())} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium text-sm transition-colors disabled:opacity-50">
+              <button onClick={() => setEditNegocio(emptyBusiness())} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium text-sm transition-colors">
                 + Nuevo negocio
               </button>
             </div>
             <div className="space-y-3">
               {negocios.map((n) => {
                 const cat = CATEGORIES.find((c) => c.id === n.category);
+                const activo = (n as any).activo !== false; // por defecto activo
                 return (
-                  <div key={n.id} className="bg-white rounded-xl border p-4 flex items-center justify-between gap-4">
-                    <div>
-                      <p className="font-semibold text-gray-900">{n.name} {n.featured && <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full ml-1">⭐ Destacado</span>} {(n as any).esNuevo && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full ml-1">🌱 Nuevo</span>}</p>
+                  <div key={n.id} className={`bg-white rounded-xl border p-4 flex items-center justify-between gap-4 transition-opacity ${activo ? "" : "opacity-60"}`}>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-semibold text-gray-900">{n.name}</p>
+                        {n.featured && <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full">⭐ Destacado</span>}
+                        {(n as any).esNuevo && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">🌱 Nuevo</span>}
+                        {!activo && <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">⏸ Inactivo</span>}
+                      </div>
                       <p className="text-sm text-gray-600">{cat?.icon} {cat?.label} · {n.address}</p>
-                      <p className="text-xs text-gray-500 mt-1">{n.tags.join(", ")}</p>
+                      <p className="text-xs text-gray-500 mt-1 truncate">{n.tags.join(", ")}</p>
                     </div>
-                    <div className="flex gap-2 shrink-0">
-                      <button onClick={() => setEditNegocio(n)} className="bg-gray-100 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-200 font-medium text-sm transition-colors">Editar</button>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {/* Toggle activo/inactivo */}
+                      <button
+                        onClick={() => handleToggleActivo(n)}
+                        title={activo ? "Desactivar negocio" : "Activar negocio"}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${activo ? "bg-green-500" : "bg-gray-300"}`}
+                      >
+                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${activo ? "translate-x-6" : "translate-x-1"}`} />
+                      </button>
+                      <button onClick={() => setEditNegocio(n)} className="bg-gray-100 text-gray-800 px-3 py-1.5 rounded-lg hover:bg-gray-200 font-medium text-sm transition-colors">Editar</button>
                       <button onClick={() => handleDeleteNegocio(n.id)} className="text-sm px-3 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50">Eliminar</button>
                     </div>
                   </div>
@@ -430,7 +500,7 @@ export default function AdminPage() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">Promociones ({promociones.length})</h2>
-              <button onClick={() => setEditPromo(emptyPromo())} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium text-sm transition-colors disabled:opacity-50">+ Nueva promo</button>
+              <button onClick={() => setEditPromo(emptyPromo())} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium text-sm transition-colors">+ Nueva promo</button>
             </div>
             <div className="space-y-3">
               {promociones.map((p) => (
@@ -454,32 +524,33 @@ export default function AdminPage() {
         {/* TAB URGENCIAS */}
         {!loading && tab === "urgencias" && (
           <div>
-            <h2 className="text-lg font-semibold mb-4 text-gray-900">Urgencias y servicios esenciales</h2>
+            <h2 className="text-lg font-semibold mb-1 text-gray-900">Urgencias y servicios esenciales</h2>
+            <p className="text-sm text-gray-500 mb-4">Los cambios se guardan automáticamente al salir de cada campo.</p>
             <div className="space-y-4">
               {urgencias.map((u) => (
                 <div key={u.id} className="bg-white rounded-xl border p-4">
                   <p className="font-semibold mb-3 text-gray-900">{u.title}</p>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-medium mb-1 text-gray-700">Teléfono</label>
+                      <label className="block text-xs font-medium mb-1 text-gray-700">📞 Teléfono</label>
                       <input
-                        className="input text-sm"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         defaultValue={u.phone}
                         onBlur={(e) => handleUpdateUrgencia(u.id, "phone", e.target.value)}
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium mb-1 text-gray-700">Dirección</label>
+                      <label className="block text-xs font-medium mb-1 text-gray-700">📍 Dirección</label>
                       <input
-                        className="input text-sm"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         defaultValue={u.address ?? ""}
                         onBlur={(e) => handleUpdateUrgencia(u.id, "address", e.target.value)}
                       />
                     </div>
-                    <div className="col-span-2">
-                      <label className="block text-xs font-medium mb-1 text-gray-700">Notas / Farmacia de turno</label>
+                    <div className="col-span-full">
+                      <label className="block text-xs font-medium mb-1 text-gray-700">📝 Notas / Farmacia de turno</label>
                       <input
-                        className="input text-sm"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         defaultValue={u.notes ?? ""}
                         onBlur={(e) => handleUpdateUrgencia(u.id, "notes", e.target.value)}
                       />
@@ -489,17 +560,15 @@ export default function AdminPage() {
               ))}
               {urgencias.length === 0 && <p className="text-center py-12 text-gray-400">Cargá los datos de ejemplo desde ⚙️ Setup.</p>}
             </div>
-            <p className="text-xs text-gray-400 mt-4">Los cambios se guardan automáticamente al salir del campo.</p>
           </div>
         )}
-
 
         {/* TAB CATEGORÍAS */}
         {tab === "categorias" && (
           <div className="max-w-lg">
             <h2 className="text-lg font-semibold mb-1 text-gray-900">Categorías visibles</h2>
             <p className="text-sm text-gray-600 mb-5">
-              Desactivá las categorías que no quieras mostrar en la página principal. Los cambios se guardan con el botón de abajo.
+              Desactivá las categorías que no quieras mostrar en la página principal.
             </p>
             <div className="space-y-2 mb-6">
               {CATEGORIES.map((cat) => {
@@ -513,16 +582,12 @@ export default function AdminPage() {
                     <button
                       onClick={() => {
                         setDesactivadas((prev) =>
-                          prev.includes(cat.id)
-                            ? prev.filter((id) => id !== cat.id)
-                            : [...prev, cat.id]
+                          prev.includes(cat.id) ? prev.filter((id) => id !== cat.id) : [...prev, cat.id]
                         );
                       }}
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${activa ? "bg-blue-600" : "bg-gray-300"}`}
                     >
-                      <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${activa ? "translate-x-6" : "translate-x-1"}`}
-                      />
+                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${activa ? "translate-x-6" : "translate-x-1"}`} />
                     </button>
                   </div>
                 );
@@ -543,13 +608,69 @@ export default function AdminPage() {
           </div>
         )}
 
+        {/* TAB MENSAJE DE BIENVENIDA */}
+        {tab === "bienvenida" && (
+          <div className="max-w-lg">
+            <h2 className="text-lg font-semibold mb-1 text-gray-900">💬 Mensaje de bienvenida</h2>
+            <p className="text-sm text-gray-600 mb-5">
+              Este mensaje aparece como un banner animado en la página principal durante 3 segundos cuando alguien abre el sitio. Podés activarlo o desactivarlo cuando quieras.
+            </p>
+
+            {loadingMensaje ? (
+              <p className="text-gray-500 text-sm">Cargando...</p>
+            ) : (
+              <div className="bg-white rounded-xl border p-5 space-y-4">
+                {/* Toggle activo */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-gray-900">Mostrar mensaje</p>
+                    <p className="text-xs text-gray-500">Activá esto para que aparezca en el inicio</p>
+                  </div>
+                  <button
+                    onClick={() => setMensajeActivo((prev) => !prev)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${mensajeActivo ? "bg-blue-600" : "bg-gray-300"}`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${mensajeActivo ? "translate-x-6" : "translate-x-1"}`} />
+                  </button>
+                </div>
+
+                {/* Texto del mensaje */}
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-900">Texto del mensaje</label>
+                  <textarea
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 h-24 resize-none"
+                    placeholder="Ej: 🎉 ¡Bienvenidos a Monte Cerca! El portal de negocios de San Miguel del Monte."
+                    value={mensajeBienvenida}
+                    onChange={(e) => setMensajeBienvenida(e.target.value)}
+                  />
+                  <p className="text-xs text-gray-400 mt-1">Podés usar emojis. El banner desaparece solo a los 3 segundos.</p>
+                </div>
+
+                {/* Preview */}
+                {mensajeBienvenida && (
+                  <div className="rounded-lg bg-blue-600 text-white px-4 py-3 text-sm font-medium text-center">
+                    {mensajeBienvenida}
+                  </div>
+                )}
+
+                <button
+                  onClick={handleSaveMensaje}
+                  disabled={savingMensaje}
+                  className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-medium text-sm disabled:opacity-50"
+                >
+                  {savingMensaje ? "Guardando..." : "Guardar mensaje"}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* TAB SETUP */}
         {tab === "setup" && (
           <div className="max-w-lg">
             <h2 className="text-lg font-semibold mb-2 text-gray-900">Carga inicial de datos</h2>
             <p className="text-sm text-gray-800 mb-4">
               Hacé esto <strong>una sola vez</strong> para cargar los negocios, promociones y urgencias de ejemplo a Firebase.
-              Después de esto, todo se edita desde este panel.
             </p>
             <button onClick={handleSeedData} disabled={seedLoading} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium text-sm transition-colors disabled:opacity-50">
               {seedLoading ? "Cargando..." : "Cargar datos de ejemplo a Firebase"}

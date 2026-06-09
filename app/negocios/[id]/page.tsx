@@ -1,4 +1,5 @@
-import { BUSINESSES, CATEGORIES } from "@/lib/data";
+import { getNegocios } from "@/lib/firestore";
+import { CATEGORIES } from "@/lib/data";
 import { isOpenNow, getScheduleToday } from "@/lib/utils";
 import { notFound } from "next/navigation";
 
@@ -12,13 +13,14 @@ const DAYS = [
   { key: "domingo",   label: "Domingo" },
 ] as const;
 
-export async function generateStaticParams() {
-  return BUSINESSES.map((b) => ({ id: b.id }));
-}
+export const revalidate = 60; // Revalida cada 60 segundos
 
 export default async function BusinessPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const business = BUSINESSES.find((b) => b.id === id);
+
+  const negocios = await getNegocios();
+  const business = negocios.find((b) => b.id === id && (b as any).activo !== false);
+
   if (!business) notFound();
 
   const open = isOpenNow(business);
@@ -68,6 +70,18 @@ export default async function BusinessPage({ params }: { params: Promise<{ id: s
               🗺️ Cómo llegar
             </a>
           )}
+          {business.instagram && (
+            <a href={`https://instagram.com/${business.instagram.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors">
+              📸 Instagram
+            </a>
+          )}
+          {business.facebook && (
+            <a href={`https://facebook.com/${business.facebook}`} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors">
+              👍 Facebook
+            </a>
+          )}
         </div>
       </div>
 
@@ -96,27 +110,6 @@ export default async function BusinessPage({ params }: { params: Promise<{ id: s
           })}
         </div>
       </div>
-
-      {/* Redes sociales */}
-      {(business.instagram || business.facebook) && (
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
-          <h2 className="font-semibold mb-3">Redes sociales</h2>
-          <div className="flex gap-3">
-            {business.instagram && (
-              <a href={`https://instagram.com/${business.instagram}`} target="_blank" rel="noopener noreferrer"
-                className="text-sm text-pink-600 hover:underline">
-                📸 Instagram
-              </a>
-            )}
-            {business.facebook && (
-              <a href={`https://facebook.com/${business.facebook}`} target="_blank" rel="noopener noreferrer"
-                className="text-sm text-blue-600 hover:underline">
-                👍 Facebook
-              </a>
-            )}
-          </div>
-        </div>
-      )}
 
     </div>
   );
