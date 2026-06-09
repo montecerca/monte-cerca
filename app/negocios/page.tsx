@@ -5,7 +5,7 @@ import { getNegocios } from "@/lib/firestore";
 import { CATEGORIES } from "@/lib/data";
 import type { Business } from "@/lib/data";
 import { isOpenNow } from "@/lib/utils";
-import SearchBar from "@/components/SearchBar";
+
 
 export default function NegociosPage() {
   const [negocios, setNegocios] = useState<Business[]>([]);
@@ -52,7 +52,13 @@ export default function NegociosPage() {
       </div>
 
       {/* Búsqueda */}
-      <SearchBar value={query} onChange={setQuery} />
+      <input
+        type="text"
+        placeholder="Buscar por nombre, categoría o tag..."
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+      />
 
       {/* Filtro por categoría */}
       <div className="flex gap-2 flex-wrap">
