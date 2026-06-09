@@ -125,11 +125,11 @@ function NegocioForm({
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
             <label className="block text-sm font-medium mb-1">Nombre *</label>
-            <input className="input" value={b.name} onChange={(e) => set("name", e.target.value)} />
+            <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={b.name} onChange={(e) => set("name", e.target.value)} />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Categoría *</label>
-            <select className="input" value={b.category} onChange={(e) => set("category", e.target.value)}>
+            <select className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={b.category} onChange={(e) => set("category", e.target.value)}>
               {CATEGORIES.map((c) => (
                 <option key={c.id} value={c.id}>{c.icon} {c.label}</option>
               ))}
@@ -137,31 +137,31 @@ function NegocioForm({
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Teléfono *</label>
-            <input className="input" value={b.phone} onChange={(e) => set("phone", e.target.value)} />
+            <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={b.phone} onChange={(e) => set("phone", e.target.value)} />
           </div>
           <div className="col-span-2">
             <label className="block text-sm font-medium mb-1">Dirección *</label>
-            <input className="input" value={b.address} onChange={(e) => set("address", e.target.value)} />
+            <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={b.address} onChange={(e) => set("address", e.target.value)} />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">WhatsApp (solo números)</label>
-            <input className="input" value={b.whatsapp ?? ""} onChange={(e) => set("whatsapp", e.target.value)} placeholder="5492271..." />
+            <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={b.whatsapp ?? ""} onChange={(e) => set("whatsapp", e.target.value)} placeholder="5492271..." />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Instagram</label>
-            <input className="input" value={b.instagram ?? ""} onChange={(e) => set("instagram", e.target.value)} placeholder="@negocio" />
+            <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={b.instagram ?? ""} onChange={(e) => set("instagram", e.target.value)} placeholder="@negocio" />
           </div>
           <div className="col-span-2">
             <label className="block text-sm font-medium mb-1">Descripción</label>
-            <textarea className="input h-20" value={b.description} onChange={(e) => set("description", e.target.value)} />
+            <textarea className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white h-20" value={b.description} onChange={(e) => set("description", e.target.value)} />
           </div>
           <div className="col-span-2">
             <label className="block text-sm font-medium mb-1">Tags (separados por coma)</label>
-            <input className="input" value={tagsStr} onChange={(e) => setTagsStr(e.target.value)} placeholder="delivery, hielo, garrafas" />
+            <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={tagsStr} onChange={(e) => setTagsStr(e.target.value)} placeholder="delivery, hielo, garrafas" />
           </div>
           <div className="col-span-2">
             <label className="block text-sm font-medium mb-1">Link Google Maps</label>
-            <input className="input" value={b.mapUrl ?? ""} onChange={(e) => set("mapUrl", e.target.value)} />
+            <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={b.mapUrl ?? ""} onChange={(e) => set("mapUrl", e.target.value)} />
           </div>
           <div className="col-span-2 flex items-center gap-2">
             <input type="checkbox" id="featured" checked={b.featured} onChange={(e) => set("featured", e.target.checked)} />
@@ -185,14 +185,14 @@ function NegocioForm({
                 <>
                   <input
                     type="time"
-                    className="input w-28 text-sm"
+                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white w-28"
                     value={b.schedule[dia].open}
                     onChange={(e) => setScheduleDay(dia, "open", e.target.value)}
                   />
                   <span className="text-sm">a</span>
                   <input
                     type="time"
-                    className="input w-28 text-sm"
+                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white w-28"
                     value={b.schedule[dia].close}
                     onChange={(e) => setScheduleDay(dia, "close", e.target.value)}
                   />
@@ -250,22 +250,22 @@ function PromoForm({
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">Negocio *</label>
-            <select className="input" value={p.businessId} onChange={(e) => set("businessId", e.target.value)}>
+            <select className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={p.businessId} onChange={(e) => set("businessId", e.target.value)}>
               <option value="">Seleccioná un negocio</option>
               {negocios.map((n) => <option key={n.id} value={n.id}>{n.name}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Título *</label>
-            <input className="input" value={p.title} onChange={(e) => set("title", e.target.value)} />
+            <input className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={p.title} onChange={(e) => set("title", e.target.value)} />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Descripción</label>
-            <textarea className="input h-20" value={p.description} onChange={(e) => set("description", e.target.value)} />
+            <textarea className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white h-20" value={p.description} onChange={(e) => set("description", e.target.value)} />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Válida hasta</label>
-            <input type="date" className="input" value={p.endsAt} onChange={(e) => set("endsAt", e.target.value)} />
+            <input type="date" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white" value={p.endsAt} onChange={(e) => set("endsAt", e.target.value)} />
           </div>
         </div>
         <div className="flex gap-3 mt-6">
